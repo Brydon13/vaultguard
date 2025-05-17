@@ -6,3 +6,5 @@ VaultGuard is a password management tool created for a ENSE 375 - Software Testi
 
 - [VaultGuard App](app)
 - [Project Report](report.pdf)
+- [Kanban](https://github.com/users/Brydon13/projects/6)
+- [Gantt Chart](https://github.com/users/Brydon13/projects/7)
