@@ -1,7 +1,75 @@
 package com.vaultguard.services;
 
+import javax.crypto.*;
+import javax.crypto.spec.*;
+import java.security.*;
+import java.util.Base64;
+
 public class EncryptionService {
-    public String testSetup(String name) {
-        return "test " + name;
+
+    private static final int IV_LENGTH = 12;
+    private static final int TAG_LENGTH_BIT = 128;
+    private static final int KEY_LENGTH = 256;
+    private static final int ITERATIONS = 100_000;
+
+    private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA256";
+    private static final String AES_ALGORITHM = "AES/GCM/NoPadding";
+
+    private SecretKey deriveKey(String password, byte[] salt) throws GeneralSecurityException{
+        PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATIONS, KEY_LENGTH);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
+        byte[] keyBytes = factory.generateSecret(spec).getEncoded();
+        return new SecretKeySpec(keyBytes, "AES");
+    }
+
+    public EncryptedData encrypt(String message, String password, byte[] salt) throws GeneralSecurityException {
+        SecretKey key = deriveKey(password, salt);
+
+        byte[] iv = new byte[IV_LENGTH];
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(iv);
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(TAG_LENGTH_BIT, iv);
+
+        Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
+        cipher.init(Cipher.ENCRYPT_MODE, key, gcmSpec);
+        byte[] ciphertextBytes = cipher.doFinal(message.getBytes());
+
+        return new EncryptedData(
+            Base64.getEncoder().encodeToString(iv),
+            Base64.getEncoder().encodeToString(ciphertextBytes)
+        );
+    }
+
+    public String decrypt(EncryptedData encryptedData, String password, byte[] salt) throws GeneralSecurityException {
+        SecretKey key = deriveKey(password, salt);
+
+        byte[] iv = Base64.getDecoder().decode(encryptedData.iv);
+        byte[] ciphertext = Base64.getDecoder().decode(encryptedData.ciphertext);
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(TAG_LENGTH_BIT, iv);
+
+        Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
+        cipher.init(Cipher.DECRYPT_MODE, key, gcmSpec);
+        byte[] plaintextBytes = cipher.doFinal(ciphertext);
+
+        return new String(plaintextBytes);
+    }
+
+    public static class EncryptedData {
+        private String iv;
+        private String ciphertext;
+
+        public EncryptedData(String iv, String ciphertext) {
+            this.iv = iv;
+            this.ciphertext = ciphertext;
+        }
+
+        public String getIv() {
+            return iv;
+        }
+
+        public String getCiphertext() {
+            return ciphertext;
+        }
     }
 }
+
