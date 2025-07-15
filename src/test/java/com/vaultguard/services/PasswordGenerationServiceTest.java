@@ -38,12 +38,29 @@ public class PasswordGenerationServiceTest {
         String password = gen.generatePassword(12);
         assertFalse(password.contains(" "));
     }
-
+   
     @Test
     public void ContainsSpecialChar() {
-        PasswordGenerationService gen = new PasswordGenerationService();
-        String password = gen.generatePassword(12);
-        assertTrue(password.matches(".*[!@#$%^&*()_+\\-=[\\]{};':\"\\\\|,.<>/?].*"));
+    PasswordGenerationService gen = new PasswordGenerationService();
+    String password = gen.generatePassword(12);
+
+    String specialChars = "#!@$%^&*()_+-=[]{}|;:',.<>/?";
+    boolean containsSpecialChar = password.chars()
+            .anyMatch(ch -> specialChars.indexOf(ch) >= 0);
+    assertTrue(containsSpecialChar, "Password should contain at least one special character");
     }
 
+    @Test
+    public void MinimumLengthPassword() {
+        PasswordGenerationService gen = new PasswordGenerationService();
+        String password = gen.generatePassword(8);
+        assertEquals(8, password.length());
+    }
+
+    @Test
+    public void MaximumLengthPassword() {
+        PasswordGenerationService gen = new PasswordGenerationService();
+        String password = gen.generatePassword(32);
+        assertEquals(32, password.length());
+    }
 }
