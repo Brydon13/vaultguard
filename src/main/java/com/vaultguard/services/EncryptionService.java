@@ -1,5 +1,7 @@
 package com.vaultguard.services;
 
+import com.vaultguard.model.EncryptedData;
+
 import javax.crypto.*;
 import javax.crypto.spec.*;
 import java.security.*;
@@ -43,8 +45,8 @@ public class EncryptionService {
     public String decrypt(EncryptedData encryptedData, String password, byte[] salt) throws GeneralSecurityException {
         SecretKey key = deriveKey(password, salt);
 
-        byte[] iv = Base64.getDecoder().decode(encryptedData.iv);
-        byte[] ciphertext = Base64.getDecoder().decode(encryptedData.ciphertext);
+        byte[] iv = Base64.getDecoder().decode(encryptedData.getIv());
+        byte[] ciphertext = Base64.getDecoder().decode(encryptedData.getCiphertext());
         GCMParameterSpec gcmSpec = new GCMParameterSpec(TAG_LENGTH_BIT, iv);
 
         Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
@@ -52,24 +54,6 @@ public class EncryptionService {
         byte[] plaintextBytes = cipher.doFinal(ciphertext);
 
         return new String(plaintextBytes);
-    }
-
-    public static class EncryptedData {
-        private String iv;
-        private String ciphertext;
-
-        public EncryptedData(String iv, String ciphertext) {
-            this.iv = iv;
-            this.ciphertext = ciphertext;
-        }
-
-        public String getIv() {
-            return iv;
-        }
-
-        public String getCiphertext() {
-            return ciphertext;
-        }
     }
 }
 
