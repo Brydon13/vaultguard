@@ -1,0 +1,9 @@
+{
+  "salt" : "ruZN3tKglqtNH7PTpS5gDg==",
+  "keys" : {
+    "vaultguard-auth" : {
+      "ciphertext" : "kKnO958eqDlWJ7vDpc4qP+AO9c7h",
+      "iv" : "Rr4dgMfvk5KQ8ONu"
+    }
+  }
+}

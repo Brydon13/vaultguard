@@ -103,7 +103,7 @@ class UserServiceTest {
         boolean result = userService.validateRegistration("username1", pwd);
         assertFalse(result, "Password longer than 32 chars should fail");
     }
-    
+
     @Test // Password with spaces
     void testValidateRegistration_PasswordWithSpaces_Fails() {
         UserService userService = new UserService();
@@ -139,4 +139,31 @@ class UserServiceTest {
         assertNotEquals(java.util.Arrays.toString(salt1), java.util.Arrays.toString(salt2), "Salts should not be equal");
     }
     // ***************** Salt Generation Tests END *****************
+
+    // ***************** Login Validation Tests BEGIN *****************
+
+    // Positive test
+    @Test // Valid login input
+    void testValidateLogin_Valid_Success() {
+        UserService userService = new UserService();
+        boolean result = userService.validateLogin("alice_01", "ValidPass1!");
+        assertTrue(result, "Login validation should succeed for valid input");
+    }
+
+    // Negative tests
+    @Test // Login with username too short
+    void testValidateLogin_UsernameTooShort_Fails() {
+        UserService userService = new UserService();
+        boolean result = userService.validateLogin("usr", "ValidPass1!");
+        assertFalse(result, "Login with username too short should fail");
+    }
+
+    @Test // Login with spaces in password
+    void testValidateLogin_PasswordWithSpaces_Fails() {
+        UserService userService = new UserService();
+        boolean result = userService.validateLogin("alice_01", "Pass word1!");
+        assertFalse(result, "Login with spaces in password should fail");
+    }
+
+    // ***************** Login Validation Tests END *****************
 }

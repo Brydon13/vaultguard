@@ -50,10 +50,12 @@ public class UserService {
     // ***************** Salt Generation Module END *****************
 
     // ***************** Login Validation Module BEGIN *****************
+    /**
+     * Validates username and password for login.
+     * Uses the same checks as registration.
+     */
     public boolean validateLogin(String username, String password) {
-
         return validateRegistration(username, password);
     }
     // ***************** Login Validation Module END *****************
-
 }
