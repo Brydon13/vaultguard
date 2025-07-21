@@ -13,8 +13,8 @@ public class PasswordGenerationService {
     private static final SecureRandom random = new SecureRandom();
 
     public String generatePassword(int length) {
-        if (length < 4) {
-            throw new IllegalArgumentException("Password length must be at least 4");
+        if (length < 8 || length > 32) {
+            throw new IllegalArgumentException("Password length must be at least 8");
         }
 
         List<Character> passwordList = new ArrayList<>();
