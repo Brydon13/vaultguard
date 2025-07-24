@@ -1,5 +1,7 @@
 package com.vaultguard.services;
 
+import com.vaultguard.model.EncryptedData;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,7 +67,7 @@ public class EncryptionServiceTest {
         byte[] iv = java.util.Base64.getDecoder().decode(encrypted.getIv());
         iv[0] ^= 1; //flip a bit
         String newIv = java.util.Base64.getEncoder().encodeToString(iv);
-        var newEncrypted = new EncryptionService.EncryptedData(newIv, encrypted.getCiphertext());
+        var newEncrypted = new EncryptedData(newIv, encrypted.getCiphertext());
 
         assertThrows(Exception.class, () -> {
             service.decrypt(newEncrypted, password, salt);
