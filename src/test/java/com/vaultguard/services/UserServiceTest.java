@@ -42,8 +42,8 @@ class UserServiceTest {
     @Test // Minimum allowed username and password length
     void testValidateUsernameAndPassword_MinLengthUsernamePassword_Success() {
         UserService userService = new UserService();
-        String username = "user1234"; // 8 chars
-        String password = "passwrd8"; // 8 chars
+        String username = "user"; // 4 chars
+        String password = "pass"; // 4 chars
         boolean result = userService.validateUsernameAndPassword(username, password);
         assertTrue(result, "Should succeed with min-length username/password");
     }
@@ -75,8 +75,8 @@ class UserServiceTest {
     @Test // Username too short (<8 chars)
     void testValidateUsernameAndPassword_UsernameTooShort_Fails() {
         UserService userService = new UserService();
-        boolean result = userService.validateUsernameAndPassword("usr1", "Password9!");
-        assertFalse(result, "Username less than 8 chars should fail");
+        boolean result = userService.validateUsernameAndPassword("usr", "Password9!");
+        assertFalse(result, "Username less than 4 chars should fail");
     }
 
     @Test // Username too long (>32 chars)
@@ -90,8 +90,8 @@ class UserServiceTest {
     @Test // Password too short (<8 chars)
     void testValidateUsernameAndPassword_PasswordTooShort_Fails() {
         UserService userService = new UserService();
-        boolean result = userService.validateUsernameAndPassword("username1", "pass12");
-        assertFalse(result, "Password less than 8 chars should fail");
+        boolean result = userService.validateUsernameAndPassword("username1", "pas");
+        assertFalse(result, "Password less than 4 chars should fail");
     }
 
     @Test // Password too long (>32 chars)
