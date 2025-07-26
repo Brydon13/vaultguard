@@ -4,9 +4,9 @@ import java.security.SecureRandom;
 
 public class UserService {
 
-    private static final int MIN_USERNAME_LENGTH = 8;
+    private static final int MIN_USERNAME_LENGTH = 4;
     private static final int MAX_USERNAME_LENGTH = 32;
-    private static final int MIN_PASSWORD_LENGTH = 8;
+    private static final int MIN_PASSWORD_LENGTH = 4;
     private static final int MAX_PASSWORD_LENGTH = 32;
 
     // Only letters, numbers, underscores, or spaces allowed
