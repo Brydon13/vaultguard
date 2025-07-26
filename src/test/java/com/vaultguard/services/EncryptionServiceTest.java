@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.security.SecureRandom;
 
+import javax.crypto.SecretKey;
+
 public class EncryptionServiceTest {
 
     EncryptionService service = new EncryptionService();
@@ -23,8 +25,10 @@ public class EncryptionServiceTest {
         String password = "testPassword";
         byte[] salt = generateSalt();
 
-        var encryptedMessage = service.encrypt(message, password, salt);
-        String decryptedMessage = service.decrypt(encryptedMessage, password, salt);
+        SecretKey key = service.deriveKey(password, salt);
+
+        var encryptedMessage = service.encrypt(message, key);
+        String decryptedMessage = service.decrypt(encryptedMessage, key);
 
         assertEquals(message, decryptedMessage);
     }
@@ -35,8 +39,10 @@ public class EncryptionServiceTest {
         String password = "testPassword";
         byte[] salt = generateSalt();
 
-        var encrypted1 = service.encrypt(message, password, salt);
-        var encrypted2 = service.encrypt(message, password, salt);
+        SecretKey key = service.deriveKey(password, salt);
+
+        var encrypted1 = service.encrypt(message, key);
+        var encrypted2 = service.encrypt(message, key);
 
         assertNotEquals(encrypted1.getCiphertext(), encrypted2.getCiphertext());
         assertNotEquals(encrypted1.getIv(), encrypted2.getIv());
@@ -48,11 +54,16 @@ public class EncryptionServiceTest {
         String password = "testPassword";
         byte[] salt = generateSalt();
 
-        var encrypted = service.encrypt(message, password, salt);
+        SecretKey key = service.deriveKey(password, salt);
+
+        var encrypted = service.encrypt(message, key);
 
         String wrongPassword = "wrong";
+
+        SecretKey wrongKey = service.deriveKey(wrongPassword, salt);
+
         assertThrows(Exception.class, () -> {
-            service.decrypt(encrypted, wrongPassword, salt);
+            service.decrypt(encrypted, wrongKey);
         });
     }
 
@@ -62,7 +73,9 @@ public class EncryptionServiceTest {
         String password = "testPassword";
         byte[] salt = generateSalt();
 
-        var encrypted = service.encrypt(message, password, salt);
+        SecretKey key = service.deriveKey(password, salt);
+
+        var encrypted = service.encrypt(message, key);
 
         byte[] iv = java.util.Base64.getDecoder().decode(encrypted.getIv());
         iv[0] ^= 1; //flip a bit
@@ -70,7 +83,7 @@ public class EncryptionServiceTest {
         var newEncrypted = new EncryptedData(newIv, encrypted.getCiphertext());
 
         assertThrows(Exception.class, () -> {
-            service.decrypt(newEncrypted, password, salt);
+            service.decrypt(newEncrypted, key);
         });
     }
 }

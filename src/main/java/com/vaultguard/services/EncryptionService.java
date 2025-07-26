@@ -17,16 +17,14 @@ public class EncryptionService {
     private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA256";
     private static final String AES_ALGORITHM = "AES/GCM/NoPadding";
 
-    private SecretKey deriveKey(String password, byte[] salt) throws GeneralSecurityException{
+    public SecretKey deriveKey(String password, byte[] salt) throws GeneralSecurityException{
         PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATIONS, KEY_LENGTH);
         SecretKeyFactory factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
         byte[] keyBytes = factory.generateSecret(spec).getEncoded();
         return new SecretKeySpec(keyBytes, "AES");
     }
 
-    public EncryptedData encrypt(String message, String password, byte[] salt) throws GeneralSecurityException {
-        SecretKey key = deriveKey(password, salt);
-
+    public EncryptedData encrypt(String message, SecretKey key) throws GeneralSecurityException {
         byte[] iv = new byte[IV_LENGTH];
         SecureRandom random = new SecureRandom();
         random.nextBytes(iv);
@@ -42,9 +40,7 @@ public class EncryptionService {
         );
     }
 
-    public String decrypt(EncryptedData encryptedData, String password, byte[] salt) throws GeneralSecurityException {
-        SecretKey key = deriveKey(password, salt);
-
+    public String decrypt(EncryptedData encryptedData, SecretKey key) throws GeneralSecurityException {
         byte[] iv = Base64.getDecoder().decode(encryptedData.getIv());
         byte[] ciphertext = Base64.getDecoder().decode(encryptedData.getCiphertext());
         GCMParameterSpec gcmSpec = new GCMParameterSpec(TAG_LENGTH_BIT, iv);
