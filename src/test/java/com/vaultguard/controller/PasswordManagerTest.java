@@ -13,8 +13,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+
+import com.vaultguard.services.UserService;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 
 public class PasswordManagerTest {
 
@@ -44,6 +51,8 @@ public class PasswordManagerTest {
         }
         Files.delete(path);
     }
+
+    // -------- TDD Tests --------
 
     @Test
     void testRegister_Success() throws Exception {
@@ -174,4 +183,54 @@ public class PasswordManagerTest {
         assertNotNull(password);
         assertEquals(16, password.length());
     }
+
+    // -------- Structure-based Testing --------
+    @Test
+    void testRegister_PathTesting_1_3_5_6() throws Exception {
+        //Force an exception to be thrown
+        UserService mockUserService = mock(UserService.class);
+        when(mockUserService.validateUsernameAndPassword(anyString(), anyString())).thenReturn(true);
+        when(mockUserService.generateSalt()).thenThrow(new RuntimeException("Forced exception"));
+
+        PasswordManager pmWithMockUserService = new PasswordManager(TEST_VAULT_PATH, mockUserService, null, null);
+
+        boolean result = pmWithMockUserService.register("testuser", "Password123");
+
+        assertFalse(result);
+    }
+
+    @Test
+    void testRegister_PathTesting_1_3_5_7() throws Exception {
+        assertTrue(pm.register("testuser", "Password123"));
+    }
+
+    @Test
+    void testRegister_PathTesting_1_3_4() throws Exception {
+        assertTrue(pm.register("testuser", "Password123"));
+        assertFalse(pm.register("testuser", "Password123"));
+    }
+
+    @Test
+    void testRegister_PathTesting_1_2() throws Exception {
+        assertFalse(pm.register("", "Password123"));
+    }
+
+    // -------- Integration Testing --------
+
+    @Test //Covers untested DU Pairs: 1, 3, 10
+    void testRegister_Integration_InvalidUsernameAndPassword() throws Exception {
+        assertFalse(pm.register("", ""));
+    }
+
+    @Test //Covers untested DU Pairs: 5, 7, 12
+    void testLogin_Integration_InvalidUsernameAndPassword() throws Exception {
+        assertFalse(pm.login("", ""));
+    }
+
+    @Test //Covers untested DU Pairs: 2, 4, 9, 6, 8, 11
+    void testRegisterAndLogin_Integration_ValidUsernameAndPassword() throws Exception {
+        assertTrue(pm.register("validuser", "validpass"));
+        assertTrue(pm.login("validuser", "validpass"));
+    }
+
 }

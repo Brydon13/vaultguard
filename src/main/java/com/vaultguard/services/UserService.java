@@ -19,17 +19,18 @@ public class UserService {
      * Returns true if valid, false if invalid.
      */
     public boolean validateUsernameAndPassword(String username, String password) {
-        if (username == null || password == null) return false;
+        boolean result = true;
+        if (username == null ||
+            password == null ||
+            username.length() < MIN_USERNAME_LENGTH || 
+            username.length() > MAX_USERNAME_LENGTH ||
+            password.length() < MIN_PASSWORD_LENGTH ||
+            password.length() > MAX_PASSWORD_LENGTH ||
+            !username.matches(USERNAME_PATTERN) ||
+            username.trim().isEmpty() ||
+            password.contains(" ")) result = false;
 
-        if (username.length() < MIN_USERNAME_LENGTH || username.length() > MAX_USERNAME_LENGTH) return false;
-        if (password.length() < MIN_PASSWORD_LENGTH || password.length() > MAX_PASSWORD_LENGTH) return false;
-
-        if (!username.matches(USERNAME_PATTERN)) return false;
-        if (username.trim().isEmpty()) return false;
-
-        if (password.contains(" ")) return false;
-
-        return true;
+        return result;
     }
 
     /**
