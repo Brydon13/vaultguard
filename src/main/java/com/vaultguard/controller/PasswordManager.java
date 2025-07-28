@@ -26,17 +26,30 @@ public class PasswordManager {
     private static final int MIN_KEY_VALUE_LENGTH = 1;
     private static final int MAX_KEY_VALUE_LENGTH = 1024;
 
-    private UserService userService = new UserService();
-    private EncryptionService encryptionService = new EncryptionService();
+    private UserService userService;
+    private EncryptionService encryptionService;
     private StorageService storageService;
-    private PasswordGenerationService passwordGenerationService = new PasswordGenerationService();
+    private PasswordGenerationService passwordGenerationService;
 
     private SecretKey activeEncryptionKey = null;
     private String activeUsername = null;
 
-    public PasswordManager(String storagePath) {
+    public PasswordManager(
+            String storagePath,
+            UserService userService,
+            EncryptionService encryptionService,
+            PasswordGenerationService passwordGenerationService
+    ) {
         this.storageService = new StorageService(storagePath);
+        this.userService = userService != null ? userService : new UserService();
+        this.encryptionService = encryptionService != null ? encryptionService : new EncryptionService();
+        this.passwordGenerationService = passwordGenerationService != null ? passwordGenerationService : new PasswordGenerationService();
     }
+
+    public PasswordManager(String storagePath) {
+        this(storagePath, null, null, null);
+    }
+
 
     /**
      * Attempts to register a new user
