@@ -32,20 +32,16 @@ public class CLI {
     }
 
     private void showLoginMenu() {
-        System.out.println("\n[1] Register, [2] Login, [3] Exit");
-        System.out.print("Select an option: ");
+        System.out.print("\nType register, login, or exit: ");
         String choice = scanner.nextLine().trim();
 
         switch (choice) {
-            case "1":
             case "register":
                 handleRegister();
                 break;
-            case "2":
             case "login":
                 handleLogin();
                 break;
-            case "3":
             case "exit":
                 System.out.println("\nGoodbye!");
                 System.exit(0);
@@ -100,34 +96,30 @@ private void handleRegister() {
         String cmd = scanner.nextLine().trim();
 
         switch (cmd) {
-            case "1":
             case "view":
                 handleView();
                 break;
-            case "2":
             case "add":
                 handleAdd();
                 break;
-            case "3":
             case "edit":
                 handleEdit();
                 break;
-            case "4":
             case "copy":
                 handleCopy();
                 break;
-            case "5":
             case "delete":
                 handleDelete();
                 break;
-            case "6":
             case "logout":
                 handleLogout();
                 break;
-            case "7":
             case "help":
                 showHelp();
                 break;
+            case "exit":
+                System.out.println("\nGoodbye!");
+                System.exit(0);
             default:
                 System.out.println("\nInvalid command. Type 'help' to see all options.");
         }
@@ -274,7 +266,7 @@ private void handleRegister() {
     }
 
     private void showHelp() {
-        System.out.println("\nAvailable commands: view, add, edit, copy, delete, logout, help");
+        System.out.println("\nAvailable commands: view, add, edit, copy, delete, logout, help, exit");
     }
 
     public static void main(String[] args) {
